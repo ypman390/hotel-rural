@@ -13,6 +13,11 @@ public class ConexionBD {
     private ConexionBD() {}
 
     public static Connection getConexion() throws SQLException {
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver MariaDB no encontrado: " + e.getMessage());
+        }
         return DriverManager.getConnection(URL, USUARIO, PASSWORD);
     }
 
