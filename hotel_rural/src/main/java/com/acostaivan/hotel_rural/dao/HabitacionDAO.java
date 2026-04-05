@@ -11,7 +11,10 @@ public interface HabitacionDAO {
     List<Habitacion> listarTodas();
     List<Habitacion> listarDisponibles();
 
+    void cambiarDisponibilidad(int id, boolean disponible);
+
     void actualizar(Habitacion habitacion);
 
     void eliminar(int id);
+
 }

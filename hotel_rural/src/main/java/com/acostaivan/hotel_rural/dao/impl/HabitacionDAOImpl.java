@@ -83,6 +83,21 @@ public class HabitacionDAOImpl implements HabitacionDAO {
     }
 
     @Override
+    public void cambiarDisponibilidad(int id, boolean disponible) {
+        String sql = "UPDATE habitaciones SET disponible = ? WHERE id = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBoolean(1, disponible);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al cambiar disponibilidad: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void actualizar(Habitacion h) {
         String sql = "UPDATE habitaciones SET nombre=?, descripcion=?, precio_noche=?, capacidad=?, fecha_alta=?, disponible=?, imagen=?, valoracion=? WHERE id=?";
         try (Connection con = ConexionBD.getConexion();

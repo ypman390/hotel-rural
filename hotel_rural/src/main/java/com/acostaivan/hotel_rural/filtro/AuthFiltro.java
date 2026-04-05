@@ -25,6 +25,7 @@ public class AuthFiltro implements Filter {
         // Rutas públicas que no necesitan login
         boolean esRutaPublica = url.equals(contextPath + "/login")
                 || url.equals(contextPath + "/registro")
+                || url.equals(contextPath + "/logout")
                 || url.equals(contextPath + "/")
                 || url.contains("/css/")
                 || url.contains("/js/")

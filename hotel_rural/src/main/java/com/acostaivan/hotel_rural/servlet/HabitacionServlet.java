@@ -38,6 +38,9 @@ public class HabitacionServlet extends HttpServlet {
             case "nueva":
                 mostrarFormularioNueva(request, response);
                 break;
+            case "disponibilidad":
+                cambiarDisponibilidad(request, response);
+                break;
             case "editar":
                 mostrarFormularioEditar(request, response);
                 break;
@@ -94,6 +97,14 @@ public class HabitacionServlet extends HttpServlet {
             throws IOException {
         Habitacion h = obtenerDatosFormulario(request);
         habitacionDAO.insertar(h);
+        response.sendRedirect(request.getContextPath() + "/habitaciones");
+    }
+
+    private void cambiarDisponibilidad(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        boolean disponible = Boolean.parseBoolean(request.getParameter("disponible"));
+        habitacionDAO.cambiarDisponibilidad(id, disponible);
         response.sendRedirect(request.getContextPath() + "/habitaciones");
     }
 

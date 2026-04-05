@@ -9,11 +9,34 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container">
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/habitaciones">
+            🏡 Hotel Rural
+        </a>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text text-white me-3">
+                👤 ${sessionScope.usuarioLogueado.nombre}
+                <span class="badge bg-light text-success">${sessionScope.rol}</span>
+            </span>
+            <a class="btn btn-outline-light btn-sm"
+               href="${pageContext.request.contextPath}/logout">
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+</nav>
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>🛏️ Habitaciones</h1>
-        <a href="${pageContext.request.contextPath}/habitaciones?accion=nueva"
-           class="btn btn-success">+ Nueva Habitación</a>
+        <c:if test="${sessionScope.rol == 'ADMIN'}">
+            <a href="${pageContext.request.contextPath}/habitaciones?accion=nueva"
+               class="btn btn-success">+ Nueva Habitación</a>
+        </c:if>
+        <c:if test="${sessionScope.rol == 'CLIENTE'}">
+            <a href="${pageContext.request.contextPath}/reservas?accion=nueva"
+               class="btn btn-success">+ Hacer Reserva</a>
+        </c:if>
     </div>
 
     <table class="table table-striped table-hover">
@@ -49,11 +72,29 @@
                 </td>
                 <td>${h.valoracion}</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/habitaciones?accion=editar&id=${h.id}"
-                       class="btn btn-warning btn-sm">Editar</a>
-                    <a href="${pageContext.request.contextPath}/habitaciones?accion=eliminar&id=${h.id}"
-                       class="btn btn-danger btn-sm"
-                       onclick="return confirm('¿Eliminar esta habitación?')">Eliminar</a>
+                    <c:if test="${sessionScope.rol == 'ADMIN'}">
+                        <a href="${pageContext.request.contextPath}/habitaciones?accion=editar&id=${h.id}"
+                           class="btn btn-warning btn-sm">Editar</a>
+                        <a href="${pageContext.request.contextPath}/habitaciones?accion=eliminar&id=${h.id}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('¿Eliminar esta habitación?')">Eliminar</a>
+                        <c:choose>
+                            <c:when test="${h.disponible}">
+                                <a href="${pageContext.request.contextPath}/habitaciones?accion=disponibilidad&id=${h.id}&disponible=false"
+                                   class="btn btn-secondary btn-sm"
+                                   onclick="return confirm('¿Marcar como no disponible?')">
+                                    Desactivar
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="${pageContext.request.contextPath}/habitaciones?accion=disponibilidad&id=${h.id}&disponible=true"
+                                   class="btn btn-success btn-sm"
+                                   onclick="return confirm('¿Marcar como disponible?')">
+                                    Activar
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
                 </td>
             </tr>
         </c:forEach>
