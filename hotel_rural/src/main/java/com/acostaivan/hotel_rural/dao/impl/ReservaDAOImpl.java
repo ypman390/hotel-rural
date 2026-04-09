@@ -2,6 +2,7 @@ package com.acostaivan.hotel_rural.dao.impl;
 
 import com.acostaivan.hotel_rural.dao.ReservaDAO;
 import com.acostaivan.hotel_rural.modelo.Reserva;
+import com.acostaivan.hotel_rural.modelo.ReservaDetalle;
 import com.acostaivan.hotel_rural.util.ConexionBD;
 
 import java.sql.*;
@@ -131,5 +132,67 @@ public class ReservaDAOImpl implements ReservaDAO {
         r.setConfirmada(rs.getBoolean("confirmada"));
         r.setObservaciones(rs.getString("observaciones"));
         return r;
+    }
+
+    @Override
+    public List<ReservaDetalle> listarConDetalle() {
+        List<ReservaDetalle> lista = new ArrayList<>();
+        String sql = "SELECT r.id, r.usuario_id, r.habitacion_id, r.numero_huespedes, " +
+                "r.precio_total, r.fecha_inicio, r.fecha_fin, r.confirmada, r.observaciones, " +
+                "u.nombre AS nombre_usuario, h.nombre AS nombre_habitacion " +
+                "FROM reservas r " +
+                "JOIN usuarios u ON r.usuario_id = u.id " +
+                "JOIN habitaciones h ON r.habitacion_id = h.id";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapearDetalle(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar reservas con detalle: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<ReservaDetalle> listarConDetallePorUsuario(int usuarioId) {
+        List<ReservaDetalle> lista = new ArrayList<>();
+        String sql = "SELECT r.id, r.usuario_id, r.habitacion_id, r.numero_huespedes, " +
+                "r.precio_total, r.fecha_inicio, r.fecha_fin, r.confirmada, r.observaciones, " +
+                "u.nombre AS nombre_usuario, h.nombre AS nombre_habitacion " +
+                "FROM reservas r " +
+                "JOIN usuarios u ON r.usuario_id = u.id " +
+                "JOIN habitaciones h ON r.habitacion_id = h.id " +
+                "WHERE r.usuario_id = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, usuarioId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                lista.add(mapearDetalle(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar reservas por usuario: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    private ReservaDetalle mapearDetalle(ResultSet rs) throws SQLException {
+        ReservaDetalle rd = new ReservaDetalle();
+        rd.setId(rs.getInt("id"));
+        rd.setUsuarioId(rs.getInt("usuario_id"));
+        rd.setHabitacionId(rs.getInt("habitacion_id"));
+        rd.setNumeroHuespedes(rs.getInt("numero_huespedes"));
+        rd.setPrecioTotal(rs.getBigDecimal("precio_total"));
+        rd.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+        rd.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+        rd.setConfirmada(rs.getBoolean("confirmada"));
+        rd.setObservaciones(rs.getString("observaciones"));
+        rd.setNombreUsuario(rs.getString("nombre_usuario"));
+        rd.setNombreHabitacion(rs.getString("nombre_habitacion"));
+        return rd;
     }
 }

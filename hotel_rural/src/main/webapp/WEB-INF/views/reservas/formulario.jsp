@@ -75,6 +75,25 @@
                       rows="3">${reserva != null ? reserva.observaciones : ''}</textarea>
         </div>
 
+        <!-- Servicios Extra -->
+        <c:if test="${not empty servicios}">
+            <div class="mb-3">
+                <label class="form-label">Servicios Extra</label>
+                <div class="border rounded p-3">
+                    <c:forEach var="s" items="${servicios}">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" name="serviciosIds" value="${s.id}"
+                                   class="form-check-input" id="servicio_${s.id}">
+                            <label class="form-check-label" for="servicio_${s.id}">
+                                    ${s.nombre} — ${s.precio} €
+                                <small class="text-muted">(${s.duracionMinutos} min)</small>
+                            </label>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">
                 ${reserva == null ? 'Crear Reserva' : 'Guardar Cambios'}

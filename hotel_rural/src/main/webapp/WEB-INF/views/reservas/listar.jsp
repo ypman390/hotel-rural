@@ -38,12 +38,15 @@
         <thead class="table-dark">
         <tr>
             <th>ID</th>
+            <c:if test="${sessionScope.rol == 'ADMIN'}">
+                <th>Cliente</th>
+            </c:if>
             <th>Habitación</th>
             <th>Huéspedes</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
+            <th>Entrada</th>
+            <th>Salida</th>
             <th>Precio total</th>
-            <th>Confirmada</th>
+            <th>Estado</th>
             <th>Observaciones</th>
             <th>Acciones</th>
         </tr>
@@ -52,7 +55,10 @@
         <c:forEach var="r" items="${reservas}">
             <tr>
                 <td>${r.id}</td>
-                <td>${r.habitacionId}</td>
+                <c:if test="${sessionScope.rol == 'ADMIN'}">
+                    <td>${r.nombreUsuario}</td>
+                </c:if>
+                <td>${r.nombreHabitacion}</td>
                 <td>${r.numeroHuespedes}</td>
                 <td>${r.fechaInicio}</td>
                 <td>${r.fechaFin}</td>
@@ -60,7 +66,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${r.confirmada}">
-                            <span class="badge bg-success">Sí</span>
+                            <span class="badge bg-success">Confirmada</span>
                         </c:when>
                         <c:otherwise>
                             <span class="badge bg-warning text-dark">Pendiente</span>

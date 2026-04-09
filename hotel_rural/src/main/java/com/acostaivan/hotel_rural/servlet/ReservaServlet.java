@@ -2,11 +2,11 @@ package com.acostaivan.hotel_rural.servlet;
 
 import com.acostaivan.hotel_rural.dao.HabitacionDAO;
 import com.acostaivan.hotel_rural.dao.ReservaDAO;
+import com.acostaivan.hotel_rural.dao.ServicioExtraDAO;
 import com.acostaivan.hotel_rural.dao.impl.HabitacionDAOImpl;
 import com.acostaivan.hotel_rural.dao.impl.ReservaDAOImpl;
-import com.acostaivan.hotel_rural.modelo.Habitacion;
-import com.acostaivan.hotel_rural.modelo.Reserva;
-import com.acostaivan.hotel_rural.modelo.Usuario;
+import com.acostaivan.hotel_rural.dao.impl.ServicioExtraDAOImpl;
+import com.acostaivan.hotel_rural.modelo.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,11 +25,13 @@ public class ReservaServlet extends HttpServlet {
 
     private ReservaDAO reservaDAO;
     private HabitacionDAO habitacionDAO;
+    private ServicioExtraDAO servicioExtraDAO;
 
     @Override
     public void init() {
         reservaDAO = new ReservaDAOImpl();
         habitacionDAO = new HabitacionDAOImpl();
+        servicioExtraDAO = new ServicioExtraDAOImpl();
     }
 
     @Override
@@ -83,16 +85,15 @@ public class ReservaServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        List<Reserva> reservas;
 
-        // ADMIN ve todas las reservas, CLIENTE solo las suyas
         if ("ADMIN".equals(usuario.getRol())) {
-            reservas = reservaDAO.listarTodas();
+            List<ReservaDetalle> reservas = reservaDAO.listarConDetalle();
+            request.setAttribute("reservas", reservas);
         } else {
-            reservas = reservaDAO.listarPorUsuario(usuario.getId());
+            List<ReservaDetalle> reservas = reservaDAO.listarConDetallePorUsuario(usuario.getId());
+            request.setAttribute("reservas", reservas);
         }
 
-        request.setAttribute("reservas", reservas);
         request.getRequestDispatcher("/WEB-INF/views/reservas/listar.jsp")
                 .forward(request, response);
     }
@@ -100,7 +101,9 @@ public class ReservaServlet extends HttpServlet {
     private void mostrarFormularioNueva(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Habitacion> habitaciones = habitacionDAO.listarDisponibles();
+        List<ServicioExtra> servicios = servicioExtraDAO .listarActivos();
         request.setAttribute("habitaciones", habitaciones);
+        request.setAttribute("servicios", servicios);
         request.getRequestDispatcher("/WEB-INF/views/reservas/formulario.jsp")
                 .forward(request, response);
     }
@@ -110,8 +113,10 @@ public class ReservaServlet extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         Reserva reserva = reservaDAO.buscarPorId(id);
         List<Habitacion> habitaciones = habitacionDAO.listarDisponibles();
+        List<ServicioExtra> servicios = servicioExtraDAO .listarActivos();
         request.setAttribute("reserva", reserva);
         request.setAttribute("habitaciones", habitaciones);
+        request.setAttribute("servicios", servicios);
         request.getRequestDispatcher("/WEB-INF/views/reservas/formulario.jsp")
                 .forward(request, response);
     }
