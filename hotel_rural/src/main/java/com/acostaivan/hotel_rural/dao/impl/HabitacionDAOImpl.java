@@ -4,6 +4,7 @@ import com.acostaivan.hotel_rural.dao.HabitacionDAO;
 import com.acostaivan.hotel_rural.modelo.Habitacion;
 import com.acostaivan.hotel_rural.util.ConexionBD;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,42 @@ public class HabitacionDAOImpl implements HabitacionDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error al listar habitaciones disponibles: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<Habitacion> buscar(String nombre, BigDecimal precioMax, Integer capacidad, Boolean disponible) {
+        List<Habitacion> lista = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM habitaciones WHERE 1=1");
+
+        if (nombre != null && !nombre.isEmpty())
+            sql.append(" AND nombre LIKE ?");
+        if (precioMax != null)
+            sql.append(" AND precio_noche <= ?");
+        if (capacidad != null)
+            sql.append(" AND capacidad >= ?");
+        if (disponible != null)
+            sql.append(" AND disponible = ?");
+
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            if (nombre != null && !nombre.isEmpty())
+                ps.setString(i++, "%" + nombre + "%");
+            if (precioMax != null)
+                ps.setBigDecimal(i++, precioMax);
+            if (capacidad != null)
+                ps.setInt(i++, capacidad);
+            if (disponible != null)
+                ps.setBoolean(i++, disponible);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(mapear(rs));
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar habitaciones: " + e.getMessage());
         }
         return lista;
     }

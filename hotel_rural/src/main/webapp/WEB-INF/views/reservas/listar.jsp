@@ -28,6 +28,35 @@
 </nav>
 
 <div class="container mt-4">
+    <!-- Formulario búsqueda -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="${pageContext.request.contextPath}/reservas" method="get" class="row g-3">
+                <input type="hidden" name="accion" value="buscar">
+                <c:if test="${sessionScope.rol == 'ADMIN'}">
+                <div class="col-md-2">
+                    <label class="form-label">ID Usuario</label>
+                    <input type="number" name="usuarioId" class="form-control" min="1" placeholder="Ej: 1">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">ID Habitación</label>
+                    <input type="number" name="habitacionId" class="form-control" min="1" placeholder="Ej: 1">
+                </div>
+                </c:if>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="confirmada" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="true">Confirmada</option>
+                        <option value="false">Pendiente</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha entrada desde</label>
+                    <input type="date" name="fechaInicio" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>📅 Reservas</h1>
         <a href="${pageContext.request.contextPath}/reservas?accion=nueva"

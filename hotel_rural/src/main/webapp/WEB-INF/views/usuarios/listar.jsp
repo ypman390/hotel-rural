@@ -28,6 +28,38 @@
 </nav>
 
 <div class="container mt-4">
+    <!-- Formulario búsqueda -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="${pageContext.request.contextPath}/usuarios" method="get" class="row g-3">
+                <input type="hidden" name="accion" value="buscar">
+                <div class="col-md-4">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Rol</label>
+                    <select name="rol" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="CLIENTE">CLIENTE</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Activo</label>
+                    <select name="activo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+                    <a href="${pageContext.request.contextPath}/usuarios" class="btn btn-secondary">↺</a>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>👤 Usuarios</h1>
         <a href="${pageContext.request.contextPath}/usuarios?accion=nuevo"

@@ -38,6 +38,9 @@ public class UsuarioServlet extends HttpServlet {
             case "nuevo":
                 mostrarFormularioNuevo(request, response);
                 break;
+            case "buscar":
+                buscar(request, response);
+                break;
             case "editar":
                 mostrarFormularioEditar(request, response);
                 break;
@@ -74,6 +77,23 @@ public class UsuarioServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Usuario> usuarios = usuarioDAO.listarTodos();
         request.setAttribute("usuarios", usuarios);
+        request.getRequestDispatcher("/WEB-INF/views/usuarios/listar.jsp")
+                .forward(request, response);
+    }
+
+    private void buscar(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nombre = request.getParameter("nombre");
+        String rol = request.getParameter("rol");
+        String activoStr = request.getParameter("activo");
+
+        Boolean activo = (activoStr != null && !activoStr.isEmpty())
+                ? Boolean.parseBoolean(activoStr) : null;
+
+        List<Usuario> usuarios = usuarioDAO.buscar(nombre, rol, activo);
+        request.setAttribute("usuarios", usuarios);
+        request.setAttribute("busqueda", true);
         request.getRequestDispatcher("/WEB-INF/views/usuarios/listar.jsp")
                 .forward(request, response);
     }

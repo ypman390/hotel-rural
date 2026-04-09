@@ -38,6 +38,9 @@ public class HabitacionServlet extends HttpServlet {
             case "nueva":
                 mostrarFormularioNueva(request, response);
                 break;
+            case "buscar":
+                buscar(request, response);
+                break;
             case "disponibilidad":
                 cambiarDisponibilidad(request, response);
                 break;
@@ -74,6 +77,28 @@ public class HabitacionServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Habitacion> habitaciones = habitacionDAO.listarTodas();
         request.setAttribute("habitaciones", habitaciones);
+        request.getRequestDispatcher("/WEB-INF/views/habitaciones/listar.jsp")
+                .forward(request, response);
+    }
+
+    private void buscar(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nombre = request.getParameter("nombre");
+        String precioMaxStr = request.getParameter("precioMax");
+        String capacidadStr = request.getParameter("capacidad");
+        String disponibleStr = request.getParameter("disponible");
+
+        BigDecimal precioMax = (precioMaxStr != null && !precioMaxStr.isEmpty())
+                ? new BigDecimal(precioMaxStr) : null;
+        Integer capacidad = (capacidadStr != null && !capacidadStr.isEmpty())
+                ? Integer.parseInt(capacidadStr) : null;
+        Boolean disponible = (disponibleStr != null && !disponibleStr.isEmpty())
+                ? Boolean.parseBoolean(disponibleStr) : null;
+
+        List<Habitacion> habitaciones = habitacionDAO.buscar(nombre, precioMax, capacidad, disponible);
+        request.setAttribute("habitaciones", habitaciones);
+        request.setAttribute("busqueda", true);
         request.getRequestDispatcher("/WEB-INF/views/habitaciones/listar.jsp")
                 .forward(request, response);
     }

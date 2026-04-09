@@ -6,6 +6,7 @@ import com.acostaivan.hotel_rural.modelo.ReservaDetalle;
 import com.acostaivan.hotel_rural.util.ConexionBD;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +81,53 @@ public class ReservaDAOImpl implements ReservaDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error al listar reservas por usuario: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<ReservaDetalle> buscar(Integer usuarioId, Integer habitacionId, Boolean confirmada, LocalDate fechaInicio, LocalDate fechaFin) {
+        List<ReservaDetalle> lista = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT r.id, r.usuario_id, r.habitacion_id, r.numero_huespedes, " +
+                        "r.precio_total, r.fecha_inicio, r.fecha_fin, r.confirmada, r.observaciones, " +
+                        "u.nombre AS nombre_usuario, h.nombre AS nombre_habitacion " +
+                        "FROM reservas r " +
+                        "JOIN usuarios u ON r.usuario_id = u.id " +
+                        "JOIN habitaciones h ON r.habitacion_id = h.id " +
+                        "WHERE 1=1");
+
+        if (usuarioId != null)
+            sql.append(" AND r.usuario_id = ?");
+        if (habitacionId != null)
+            sql.append(" AND r.habitacion_id = ?");
+        if (confirmada != null)
+            sql.append(" AND r.confirmada = ?");
+        if (fechaInicio != null)
+            sql.append(" AND r.fecha_inicio >= ?");
+        if (fechaFin != null)
+            sql.append(" AND r.fecha_fin <= ?");
+
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            if (usuarioId != null)
+                ps.setInt(i++, usuarioId);
+            if (habitacionId != null)
+                ps.setInt(i++, habitacionId);
+            if (confirmada != null)
+                ps.setBoolean(i++, confirmada);
+            if (fechaInicio != null)
+                ps.setDate(i++, Date.valueOf(fechaInicio));
+            if (fechaFin != null)
+                ps.setDate(i++, Date.valueOf(fechaFin));
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(mapearDetalle(rs));
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar reservas: " + e.getMessage());
         }
         return lista;
     }

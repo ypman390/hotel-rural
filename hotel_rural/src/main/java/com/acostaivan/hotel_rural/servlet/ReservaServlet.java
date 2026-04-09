@@ -48,6 +48,9 @@ public class ReservaServlet extends HttpServlet {
             case "nueva":
                 mostrarFormularioNueva(request, response);
                 break;
+            case "buscar":
+                buscar(request, response);
+                break;
             case "editar":
                 mostrarFormularioEditar(request, response);
                 break;
@@ -94,6 +97,33 @@ public class ReservaServlet extends HttpServlet {
             request.setAttribute("reservas", reservas);
         }
 
+        request.getRequestDispatcher("/WEB-INF/views/reservas/listar.jsp")
+                .forward(request, response);
+    }
+    private void buscar(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String usuarioIdStr = request.getParameter("usuarioId");
+        String habitacionIdStr = request.getParameter("habitacionId");
+        String confirmadaStr = request.getParameter("confirmada");
+        String fechaInicioStr = request.getParameter("fechaInicio");
+        String fechaFinStr = request.getParameter("fechaFin");
+
+        Integer usuarioId = (usuarioIdStr != null && !usuarioIdStr.isEmpty())
+                ? Integer.parseInt(usuarioIdStr) : null;
+        Integer habitacionId = (habitacionIdStr != null && !habitacionIdStr.isEmpty())
+                ? Integer.parseInt(habitacionIdStr) : null;
+        Boolean confirmada = (confirmadaStr != null && !confirmadaStr.isEmpty())
+                ? Boolean.parseBoolean(confirmadaStr) : null;
+        LocalDate fechaInicio = (fechaInicioStr != null && !fechaInicioStr.isEmpty())
+                ? LocalDate.parse(fechaInicioStr) : null;
+        LocalDate fechaFin = (fechaFinStr != null && !fechaFinStr.isEmpty())
+                ? LocalDate.parse(fechaFinStr) : null;
+
+        List<ReservaDetalle> reservas = reservaDAO.buscar(
+                usuarioId, habitacionId, confirmada, fechaInicio, fechaFin);
+        request.setAttribute("reservas", reservas);
+        request.setAttribute("busqueda", true);
         request.getRequestDispatcher("/WEB-INF/views/reservas/listar.jsp")
                 .forward(request, response);
     }

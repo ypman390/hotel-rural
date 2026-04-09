@@ -27,6 +27,39 @@
     </div>
 </nav>
 <div class="container mt-4">
+    <!-- Formulario búsqueda -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="${pageContext.request.contextPath}/habitaciones" method="get" class="row g-3">
+                <input type="hidden" name="accion" value="buscar">
+                <div class="col-md-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Precio máximo (€)</label>
+                    <input type="number" name="precioMax" class="form-control"
+                           step="0.01" min="0" placeholder="Ej: 150">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Capacidad mínima</label>
+                    <input type="number" name="capacidad" class="form-control" min="1" placeholder="Ej: 2">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Disponible</label>
+                    <select name="disponible" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+                    <a href="${pageContext.request.contextPath}/habitaciones" class="btn btn-secondary">↺</a>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>🛏️ Habitaciones</h1>
         <c:if test="${sessionScope.rol == 'ADMIN'}">

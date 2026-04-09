@@ -100,6 +100,38 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     }
 
     @Override
+    public List<Usuario> buscar(String nombre, String rol, Boolean activo) {
+        List<Usuario> lista = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM usuarios WHERE 1=1");
+
+        if (nombre != null && !nombre.isEmpty())
+            sql.append(" AND nombre LIKE ?");
+        if (rol != null && !rol.isEmpty())
+            sql.append(" AND rol = ?");
+        if (activo != null)
+            sql.append(" AND activo = ?");
+
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            if (nombre != null && !nombre.isEmpty())
+                ps.setString(i++, "%" + nombre + "%");
+            if (rol != null && !rol.isEmpty())
+                ps.setString(i++, rol);
+            if (activo != null)
+                ps.setBoolean(i++, activo);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(mapear(rs));
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuarios: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
     public void actualizar(Usuario u) {
         String sql = "UPDATE usuarios SET nombre=?, email=?, password=?, rol=?, edad=?, saldo=?, fecha_registro=?, activo=? WHERE id=?";
         try (Connection con = ConexionBD.getConexion();

@@ -13,6 +13,7 @@ public interface UsuarioDAO {
     Usuario buscarPorEmail(String email);
     List<Usuario> listarTodos();
     List<Usuario> listarActivos();
+    List<Usuario> buscar(String nombre, String rol, Boolean activo);
 
     // Actualizar
     void actualizar(Usuario usuario);
